@@ -24,7 +24,7 @@ defaults:
 apps:
   cursor-buildstack:
     repo: bikramgupta/cursor-buildstack
-    status: onboarding
+    status: live
     budget_usd_month: 500
     cadence:
       support: []
