@@ -20,12 +20,12 @@ org:
   name: cursor-buildstack
   max_concurrent_turns: 2
 defaults:
-  budget_usd_month: 1000
+  budget_usd_month: 500
 apps:
   cursor-buildstack:
     repo: bikramgupta/cursor-buildstack
     status: onboarding
-    budget_usd_month: 1000
+    budget_usd_month: 500
     cadence:
       support: []
       marketing: []
