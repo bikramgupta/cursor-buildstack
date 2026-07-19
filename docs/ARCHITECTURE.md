@@ -1,14 +1,11 @@
 # Architecture - cursor-buildstack
 
-## Current Shape
+## Current shape
 
-- Static HTML entry point served locally by `scripts/server.mjs`.
-- Strict TypeScript domain code in `src/domain.ts`.
-- Browser rendering in `src/client.ts`.
-- Node built-in tests in `test/domain.test.ts`.
+- Astro renders a zero-JavaScript-by-default static site into `dist/`.
+- `src/layouts/Base.astro` owns the shared document shell and composes `BaseHead`, `Header`, and `Footer`.
+- `src/styles/tokens.css` is the canonical design-token source; `base.css` applies the shared visual system.
+- Home and about routes live in `src/pages/`. Blog and project routes are deferred.
+- Fontsource packages self-host the display, body, and utility typefaces in the build.
 
-## Evolution
-
-The first Planner pass should decide whether the product needs a backend,
-database, auth, queue, or third-party integrations. Add those only when a ticket
-has explicit acceptance criteria and matching gates.
+The configured MDX and sitemap integrations establish the static content foundation. `@astrojs/rss` is installed for the later feed route; RSS is a route-generation utility rather than an Astro config integration.

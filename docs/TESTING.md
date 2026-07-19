@@ -1,11 +1,10 @@
 # Testing
 
-The scaffold uses Node's built-in test runner after compiling TypeScript.
+Run the full gate with:
 
 ```bash
 npm test
 npm run lint
 ```
 
-Add focused tests with each feature ticket. Acceptance criteria in GitHub issues
-should map to named tests or a documented manual check.
+`npm test` runs `astro check`, creates the production `dist/`, and then runs the Node acceptance tests in `test/site.test.mjs` against source and built HTML. The suite covers configuration, shared shell usage, page structure, accessibility, motion, self-hosted fonts, and removal of the placeholder scaffold.

@@ -1,0 +1,28 @@
+:root {
+  --paper:#F5F6F5;
+  --raise:#FBFCFB;
+  --ink:#14181A;
+  --muted:#5B6467;
+  --faint:#8A9195;
+  --line:#E2E5E4;
+  --accent:#155C4E;
+  --accent-soft:#E4EFEA;
+  --display:"Space Grotesk",ui-sans-serif,system-ui,sans-serif;
+  --body:"IBM Plex Sans",ui-sans-serif,system-ui,-apple-system,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,monospace;
+  --measure:44rem;
+  --pad:clamp(1.25rem,5vw,2rem);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper:#0E1213;
+    --raise:#161B1C;
+    --ink:#EAEEEC;
+    --muted:#9AA3A2;
+    --faint:#6B7473;
+    --line:#242A2A;
+    --accent:#4FBE9B;
+    --accent-soft:#12251F;
+  }
+}

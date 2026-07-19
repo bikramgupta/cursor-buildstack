@@ -1,0 +1,14 @@
+---
+import Base from "../layouts/Base.astro";
+import TrustLadder from "../components/TrustLadder.astro";
+import PostRow from "../components/PostRow.astro";
+import ProjectCard from "../components/ProjectCard.astro";
+const description = "Infrastructure built to be run by agents. Systems for infrastructure, security, and availability — agent-native by default.";
+---
+<Base title="buildstacks — agent-native infrastructure" description={description}>
+  <section class="hero" data-section="hero"><div class="wrap"><p class="eyebrow">// infrastructure for the agent-native era</p><h1>Infrastructure built to be run by agents.</h1><p class="lede">I design and write about systems for infrastructure, security, and availability — agent-native by default, with humans in the loop exactly where the downside demands it.</p><div class="cta-row"><a href="#writing">read the writing <span class="arw">→</span></a><a href="#projects">see the projects <span class="arw">→</span></a></div></div></section>
+  <section data-section="trust-ladder"><div class="wrap"><TrustLadder /></div></section>
+  <section class="block" id="writing" data-section="latest-writing"><div class="wrap"><p class="eyebrow">// writing</p><div class="rows"><PostRow date="2026-06-28" title="The trust ladder for autonomous ops" description="Why read-only comes before reversible, and reversible before autonomous — and how to know when a system has earned its next rung." href="/blog/trust-ladder"/><PostRow date="2026-06-10" title="Agent-native infra needs its own trust architecture" description="High-consequence, low-reversibility domains change the whole design." href="/blog/trust-architecture"/><PostRow date="2026-05-22" title="Closed loops, or it's broken by design" description="An agent workflow without a feedback-and-improvement loop is an open-loop hope." href="/blog/closed-loops"/></div><a class="more" href="/blog">all writing →</a></div></section>
+  <section class="block" id="projects" data-section="projects"><div class="wrap"><p class="eyebrow">// projects</p><div class="cards"><ProjectCard name="Operon" description="A multi-agent operating model for organizations, with tiered human review calibrated by consequence." tags={["multi-agent", "orchestration"]} repo="https://github.com/buildstacks/operon"/><ProjectCard name="Responsible Citizen" description="Agent skills for accountable, auditable automation and higher-trust workflows." tags={["agent-skills", "governance"]} repo="https://github.com/buildstacks/responsible-citizen"/></div></div></section>
+  <section class="block" id="about" data-section="about-teaser"><div class="wrap about"><p class="eyebrow">// about</p><p>Solutions engineer turned solo founder, building the tools I wanted for running agent-operated systems in domains where the downside is real — infrastructure, security, availability.</p><a class="more" href="/about">more about me →</a></div></section>
+</Base>
