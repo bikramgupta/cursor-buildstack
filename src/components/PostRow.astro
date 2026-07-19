@@ -1,0 +1,5 @@
+---
+interface Props { date: string; title: string; description: string; href: string; }
+const { date, title, description, href } = Astro.props;
+---
+<article class="post"><time datetime={date}>{date}</time><h2><a href={href}>{title}</a></h2><p>{description}</p></article>

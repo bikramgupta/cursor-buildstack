@@ -1,24 +1,23 @@
 # Runbook - cursor-buildstack
 
-## Local Start
+## Local start
 
 ```bash
 npm install
-npm start
+npm run dev
 ```
 
-## Quality Gates
+## Quality gates
 
 ```bash
 npm test
 npm run lint
 ```
 
-## Operon Loop
+## Static build
 
-After this repo is pushed and an `op:ready` issue exists, run from any
-directory (Operon resolves the active org home):
+`npm run build` writes the deployable site to `dist/`. Deployment is deferred to a later milestone; this repository currently declares no release command.
 
-```bash
-operon loop --app cursor-buildstack --once
-```
+## Operon loop
+
+With an `op:ready` issue available, run `operon loop --app cursor-buildstack --once` from any directory in the active organization.
