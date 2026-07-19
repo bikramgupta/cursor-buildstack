@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>buildstacks — prototype</title>
+<meta name="description" content="Infrastructure built to be run by agents. Systems for infrastructure, security, and availability — agent-native by default." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F5F6F5;
+    --raise:#FBFCFB;
+    --ink:#14181A;
+    --muted:#5B6467;
+    --faint:#8A9195;
+    --line:#E2E5E4;
+    --accent:#155C4E;      /* pine / "system healthy" green — subject-grounded, not clay */
+    --accent-soft:#E4EFEA;
+    --display:"Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+    --body:"IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
+    --mono:"IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+    --measure:44rem;
+    --pad:clamp(1.25rem, 5vw, 2rem);
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --paper:#0E1213; --raise:#161B1C; --ink:#EAEEEC; --muted:#9AA3A2;
+      --faint:#6B7473; --line:#242A2A; --accent:#4FBE9B; --accent-soft:#12251F;
+    }
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:var(--body); font-size:17px; line-height:1.65;
+    -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+  }
+  .wrap{max-width:var(--measure); margin-inline:auto; padding-inline:var(--pad);}
+  a{color:inherit; text-decoration:none;}
+  ::selection{background:var(--accent-soft);}
+
+  /* mono utility voice — the connective tissue of the whole site */
+  .mono{font-family:var(--mono); font-size:.8rem; letter-spacing:.02em;}
+  .eyebrow{font-family:var(--mono); font-size:.78rem; color:var(--faint); letter-spacing:.04em; margin:0 0 1.15rem;}
+
+  /* header */
+  header.site{position:sticky; top:0; z-index:10; background:color-mix(in srgb, var(--paper) 86%, transparent); backdrop-filter:saturate(1.1) blur(8px); border-bottom:1px solid var(--line);}
+  .bar{display:flex; align-items:center; justify-content:space-between; height:60px;}
+  .brand{display:inline-flex; align-items:center; gap:.55rem; font-family:var(--mono); font-weight:500; font-size:.95rem; letter-spacing:.01em;}
+  .brand svg{display:block;}
+  nav.top{display:flex; gap:1.4rem; align-items:center; font-family:var(--mono); font-size:.82rem;}
+  nav.top a{color:var(--muted); transition:color .15s;}
+  nav.top a:hover{color:var(--ink);}
+  nav.top a.ext::after{content:"↗"; margin-left:.15rem; color:var(--faint);}
+
+  /* hero */
+  .hero{padding:clamp(3.5rem,9vw,6.5rem) 0 clamp(2rem,5vw,3rem);}
+  .hero h1{
+    font-family:var(--display); font-weight:600; letter-spacing:-.02em;
+    font-size:clamp(2.1rem,6.2vw,3.5rem); line-height:1.06; margin:.2rem 0 1.1rem; max-width:16ch;
+  }
+  .hero p.lede{font-size:1.12rem; color:var(--muted); max-width:38ch; margin:0 0 1.9rem;}
+  .cta-row{display:flex; flex-wrap:wrap; gap:1.4rem; font-family:var(--mono); font-size:.86rem;}
+  .cta-row a{display:inline-flex; align-items:center; gap:.4rem; color:var(--ink); border-bottom:1px solid var(--line); padding-bottom:2px; transition:border-color .15s, gap .15s;}
+  .cta-row a:hover{border-color:var(--accent); gap:.6rem;}
+  .cta-row a .arw{color:var(--accent);}
+
+  /* signature: the trust ladder — a real, typed sequence from the thesis */
+  .ladder{border-top:1px solid var(--line); border-bottom:1px solid var(--line); padding:clamp(1.5rem,4vw,2.2rem) 0; margin-top:clamp(2rem,5vw,3rem);}
+  .ladder .steps{display:flex; flex-wrap:wrap; align-items:stretch; gap:.5rem; margin:.2rem 0 0;}
+  .rung{flex:1 1 8rem; min-width:8rem; border:1px solid var(--line); border-radius:3px; padding:.7rem .8rem .8rem; background:var(--raise);}
+  .rung .n{font-family:var(--mono); font-size:.72rem; color:var(--faint);}
+  .rung .t{font-family:var(--mono); font-weight:500; font-size:.9rem; margin-top:.15rem;}
+  .rung.here{border-color:var(--accent); box-shadow:inset 0 0 0 1px var(--accent);}
+  .rung.here .t{color:var(--accent);}
+  .ladder .cap{font-family:var(--mono); font-size:.78rem; color:var(--muted); margin:.95rem 0 0;}
+  .ladder .cap b{color:var(--ink); font-weight:500;}
+
+  /* sections */
+  section.block{padding:clamp(3rem,7vw,4.5rem) 0; border-bottom:1px solid var(--line);}
+  .rows{display:flex; flex-direction:column;}
+  .post{display:grid; grid-template-columns:8.5rem 1fr; gap:.4rem 1.4rem; padding:1.1rem 0; border-top:1px solid var(--line);}
+  .post:first-of-type{border-top:none;}
+  .post time{font-family:var(--mono); font-size:.8rem; color:var(--faint); padding-top:.2rem;}
+  .post h3{font-family:var(--display); font-weight:500; font-size:1.12rem; letter-spacing:-.01em; margin:0; line-height:1.25;}
+  .post h3 a{background-image:linear-gradient(var(--accent),var(--accent)); background-size:0% 1px; background-repeat:no-repeat; background-position:0 100%; transition:background-size .2s; padding-bottom:1px;}
+  .post:hover h3 a{background-size:100% 1px;}
+  .post p{grid-column:2; margin:.2rem 0 0; color:var(--muted); font-size:.98rem;}
+  .more{font-family:var(--mono); font-size:.8rem; color:var(--muted); margin-top:1.4rem; display:inline-block; border-bottom:1px solid transparent; transition:.15s;}
+  .more:hover{color:var(--ink); border-color:var(--accent);}
+
+  /* projects */
+  .cards{display:grid; grid-template-columns:1fr 1fr; gap:1rem;}
+  .card{border:1px solid var(--line); border-radius:3px; padding:1.4rem 1.35rem 1.25rem; background:var(--raise); display:flex; flex-direction:column; transition:border-color .15s, transform .15s;}
+  .card:hover{border-color:var(--accent); transform:translateY(-2px);}
+  .card h3{font-family:var(--display); font-weight:600; font-size:1.2rem; letter-spacing:-.01em; margin:0 0 .5rem;}
+  .card p{margin:0 0 1rem; color:var(--muted); font-size:.96rem; flex:1;}
+  .tags{display:flex; flex-wrap:wrap; gap:.4rem; margin-bottom:.95rem;}
+  .tag{font-family:var(--mono); font-size:.72rem; color:var(--muted); background:var(--accent-soft); padding:.15rem .45rem; border-radius:2px;}
+  .repo{font-family:var(--mono); font-size:.8rem; color:var(--accent); display:inline-flex; align-items:center; gap:.35rem;}
+  .repo::after{content:"↗";}
+
+  /* about */
+  .about p{font-size:1.05rem; max-width:52ch; margin:0 0 1.2rem;}
+
+  footer.site{padding:2.2rem 0 3rem; display:flex; flex-wrap:wrap; align-items:center; gap:1rem; justify-content:space-between;}
+  footer .brand{color:var(--muted);}
+  footer nav{display:flex; gap:1.2rem; font-family:var(--mono); font-size:.8rem;}
+  footer nav a{color:var(--muted);} footer nav a:hover{color:var(--ink);}
+  footer .cr{font-family:var(--mono); font-size:.78rem; color:var(--faint);}
+
+  a:focus-visible, .cta-row a:focus-visible{outline:2px solid var(--accent); outline-offset:3px; border-radius:2px;}
+
+  @media (max-width:560px){
+    .post{grid-template-columns:1fr;} .post time{padding-top:0;} .post p{grid-column:1;}
+    .cards{grid-template-columns:1fr;}
+    nav.top{gap:1rem;} nav.top a[data-hide]{display:none;}
+  }
+
+  /* one orchestrated load moment — the ladder assembling. reduced-motion respected. */
+  @media (prefers-reduced-motion:no-preference){
+    .rung{opacity:0; transform:translateY(6px); animation:rise .5s ease forwards;}
+    .rung:nth-child(1){animation-delay:.15s;} .rung:nth-child(2){animation-delay:.28s;} .rung:nth-child(3){animation-delay:.41s;}
+    @keyframes rise{to{opacity:1; transform:none;}}
+  }
+</style>
+</head>
+<body>
+<header class="site">
+  <div class="wrap bar">
+    <a class="brand" href="#" aria-label="buildstacks home">
+      <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+        <g fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round">
+          <path d="M8 1.5 14 4.5 8 7.5 2 4.5 8 1.5Z"/>
+          <path d="M2 8 8 11 14 8"/>
+          <path d="M2 11.5 8 14.5 14 11.5" stroke="var(--accent)"/>
+        </g>
+      </svg>
+      buildstacks
+    </a>
+    <nav class="top">
+      <a href="#writing">blog</a>
+      <a href="#projects">projects</a>
+      <a href="#about" data-hide>about</a>
+      <a href="#" class="ext">github</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="wrap">
+      <p class="eyebrow">// infrastructure for the agent-native era</p>
+      <h1>Infrastructure built to be run by agents.</h1>
+      <p class="lede">I design and write about systems for infrastructure, security, and availability — agent-native by default, with humans in the loop exactly where the downside demands it.</p>
+      <div class="cta-row">
+        <a href="#writing">read the writing <span class="arw">→</span></a>
+        <a href="#projects">see the projects <span class="arw">→</span></a>
+      </div>
+
+      <div class="ladder" aria-label="How autonomy is earned">
+        <p class="eyebrow" style="margin-bottom:.9rem">// how autonomy is earned</p>
+        <div class="steps">
+          <div class="rung here"><div class="n">01</div><div class="t">read-only</div></div>
+          <div class="rung"><div class="n">02</div><div class="t">reversible + guardrails</div></div>
+          <div class="rung"><div class="n">03</div><div class="t">autonomous</div></div>
+        </div>
+        <p class="cap">hands-free is <b>earned</b>, not assumed — each rung is proven before the next.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="writing">
+    <div class="wrap">
+      <p class="eyebrow">// writing</p>
+      <div class="rows">
+        <article class="post">
+          <time datetime="2026-06-28">2026-06-28</time>
+          <h3><a href="#">The trust ladder for autonomous ops</a></h3>
+          <p>Why read-only comes before reversible, and reversible before autonomous — and how to know when a system has earned its next rung.</p>
+        </article>
+        <article class="post">
+          <time datetime="2026-06-10">2026-06-10</time>
+          <h3><a href="#">Agent-native infra needs its own trust architecture</a></h3>
+          <p>The low-stakes examples in the literature don't survive contact with production. High-consequence, low-reversibility domains change the whole design.</p>
+        </article>
+        <article class="post">
+          <time datetime="2026-05-22">2026-05-22</time>
+          <h3><a href="#">Closed loops, or it's broken by design</a></h3>
+          <p>An agent workflow without a feedback-and-improvement loop isn't a workflow — it's an open-loop hope.</p>
+        </article>
+      </div>
+      <a class="more" href="#">all writing →</a>
+    </div>
+  </section>
+
+  <section class="block" id="projects">
+    <div class="wrap">
+      <p class="eyebrow">// projects</p>
+      <div class="cards">
+        <article class="card">
+          <h3>Operon</h3>
+          <p>A multi-agent operating model for organizations — a supervisor coordinating agents for code, design, and monitoring, with tiered human review calibrated by consequence.</p>
+          <div class="tags"><span class="tag">multi-agent</span><span class="tag">orchestration</span></div>
+          <a class="repo" href="#">github.com/buildstacks/operon</a>
+        </article>
+        <article class="card">
+          <h3>Responsible Citizen</h3>
+          <p>A library of agent skills for accountable, auditable automation — guardrails and review patterns you can compose into higher-trust workflows.</p>
+          <div class="tags"><span class="tag">agent-skills</span><span class="tag">governance</span></div>
+          <a class="repo" href="#">github.com/buildstacks/responsible-citizen</a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="about">
+    <div class="wrap about">
+      <p class="eyebrow">// about</p>
+      <p>Solutions engineer turned solo founder, building the tools I wanted for running agent-operated systems in domains where the downside is real — infrastructure, security, availability.</p>
+      <a class="more" href="#">more about me →</a>
+    </div>
+  </section>
+</main>
+
+<footer class="site">
+  <div class="wrap bar" style="height:auto; align-items:center;">
+    <a class="brand" href="#">
+      <svg width="15" height="15" viewBox="0 0 16 16" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"><path d="M8 1.5 14 4.5 8 7.5 2 4.5 8 1.5Z"/><path d="M2 8 8 11 14 8"/><path d="M2 11.5 8 14.5 14 11.5"/></g></svg>
+      buildstacks
+    </a>
+    <nav><a href="#" class="ext">github</a><a href="#writing">blog</a><a href="#projects">projects</a></nav>
+    <span class="cr">© 2026 buildstacks.dev</span>
+  </div>
+</footer>
+</body>
+</html>
